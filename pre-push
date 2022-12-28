@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Realiza o build do projeto
+./gradlew build
+
+# Verifica o resultado do build
+if [ $? -ne 0 ]; then
+  echo "Falha no build. O push não pode ser realizado." >&2
+  exit 1
+fi
+
+# Realiza os testes
+./gradlew test
+
+# Verifica o resultado dos testes
+if [ $? -ne 0 ]; then
+  echo "Falha nos testes. O push não pode ser realizado." >&2
+  exit 1
+fi
