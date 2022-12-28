@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Este script tem por intuito configurar um githook que verifica se existe um dos prefixos  
+# listados na mensagem de commit, e se o commit não é vazio, usando prepare-commit-msg.
+# Esse githook é acionado antes de o usuário digitar a mensagem de commit,
+# assim é realizada uma verificação se a mensagem de commit começa com um dos prefixos 
+# listados ou for vazia, senão exibirá uma mensagem de erro e cancelar o commit.
+
+PREFIXES="build chore ci docs feat fix perf refactor revert style test"
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+found=false
+for prefix in $PREFIXES; do
+  if echo "$commit_msg" | grep "^$prefix" > /dev/null; then
+    found=true
+    break
+  fi
+done
+
+if ! $found; then
+  echo "A mensagem de commit deve começar com um dos seguintes prefixos: $PREFIXES" >&2
+  exit 1
+fi
+
+# Verifica se a mensagem de commit não está vazia além do prefixo
+if [ ${#commit_msg} -le ${#prefix} + 1 ]; then
+  echo "A mensagem de commit não pode estar vazia além do prefixo" >&2
+  exit 1
+fi
